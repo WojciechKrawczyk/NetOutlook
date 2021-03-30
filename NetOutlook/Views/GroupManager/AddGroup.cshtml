@@ -1,0 +1,127 @@
+﻿@{
+    ViewData["Title"] = "AddGroup";
+}
+
+<link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet">
+<div class="container bootdey">
+    <div class="email-app">
+        <main>
+            <h4 class="text-center">Add new group</h4>
+            <form>
+                <div class="form-row mb-3">
+                    <label for="Group name" class="col-2 col-sm-1 col-form-label">Group name:</label>
+                    <div class="col-10 col-sm-11">
+                        <input type="text" class="form-control" id="subject" placeholder="Group name. Don't start with 'g:' and don't use ';'">
+                    </div>
+                </div>
+                <div class="form-row mb-3">
+                    <label for="to" class="col-2 col-sm-1 col-form-label">Group members:</label>
+                    <div class="col-10 col-sm-11">
+                        <textarea type="text" class="form-control" id="rec_to" placeholder="Add emails, separating them with ';'. To address group, type: 'g:group_name'."></textarea>
+                    </div>
+                </div>
+            </form>
+            <div class="row">
+                <div class="col-sm-11 ml-auto">
+                    <div class="toolbar" role="toolbar">
+                        <div class="btn-group">
+                            <button type="button" onclick="GCL(0)" class="btn btn-light">
+                                + Group Member
+                            </button>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <button type="submit" onclick="VerifyMessage()" class="btn btn-outline-success">Add</button>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+
+
+@*To od dołu trzeba skopiować, by można było dodać okno modalne z listą kontatków
+    onclick="GCL(0)"*@
+
+<div class="modal fade" id="ContactModal" role="dialog">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Contacts</h4>
+            </div>
+            <div class="modal-body">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section scripts{
+    <script>
+        function GCL(id) {
+            $.get("@Url.Action("PopupContact","NewMessage")/" + id,
+                function (data)
+                {
+                    $('.modal-body').html(data);
+                });
+
+                $("#ContactModal").modal("show");
+        }
+    </script>
+    <script>
+        function AddReceiver(text, type_id, action_id) {
+            $("#ContactModal").modal("hide");
+
+            var input;
+
+            if (action_id == 0) input = $('#rec_to');
+            else if (action_id == 1) input = $("#rec_cc");
+            else input = $("#rec_bcc");
+
+            if (type_id == 0) {
+                input.val(input.val() + text + ';');
+            }
+            else if (type_id == 1) {
+                input.val(input.val() + 'g:' + text + ';');
+            }
+
+
+
+        }
+    </script>
+    <script>
+        function VerifyMessage()
+        {
+                Send();
+        }
+    </script>
+    <script>
+        function Send() {
+            console.log("Group adding 2...")
+            var group = new Object();
+            group.GroupName = $("#subject").val();
+            group.Emails = $("#rec_to").val();
+
+            console.log(group);
+
+            $.ajax(
+                {
+                    url: '/GroupManager/Send',
+                    type: 'POST',
+                    data: JSON.stringify(group),
+                    contentType: 'application/json; charset=utf-8',
+                    success: function (data) {
+                        alert(data.msg);
+                        location.href = '/GroupManager/GroupManager';
+                    },
+                    error: function (data) {
+                        alert(data.msg);
+                        location.href = '/GroupManager/AddGroup';
+                    }
+                });
+        }
+    </script>
+}

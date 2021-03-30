@@ -1,0 +1,91 @@
+﻿@model (List<NetOutlook.Database.UserRaw> UsersList, List<NetOutlook.Database.GroupRaw> GroupList)
+
+
+
+<ul class="nav nav-tabs nav-justified" role="tablist">
+    <li class="nav-item active"><a href="#users_list" role="tab" data-toggle="tab">Users</a></li>
+    <li class="nav-item"><a href="#groups_list" role="tab" data-toggle="tab">Groups</a></li>
+</ul>
+
+
+<div class="tab-content">
+    <div class="tab-pane active" id="users_list">
+            <div class="container bootdey">
+                <div class="table-responsive">
+                    <div class="col-md-12 col-lg-9">
+                        <div class="card">
+                            <table class="table table-striped no-wrap sortable table-hover v-middle mb-0 font-14" id="user_contact_table">
+                                <thead>
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>Surname</th>
+                                        <th>E-Mail</th>
+                                        <th>Role</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var user in Model.UsersList)
+                                    {
+                                        <tr onclick="AddReceiver('@user.EmailAddress',0,@ViewData["ActionID"])">
+                                            <td>
+                                                <span class="text-dark">@user.Name</span>
+                                            </td>
+                                            <td>
+                                                <span class="text-dark">@user.Surname</span>
+                                            </td>
+                                            <td class="text-muted">@user.EmailAddress</td>
+                                            @if (user.Role == 0)
+                                            {
+                                                <td class="text-muted">User</td>
+                                            }
+                                            else
+                                            {
+                                                <td class="text-muted">Administrator</td>
+                                            }
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+    </div>
+    <div class="tab-pane" id="groups_list">
+            <div class="container bootdey">
+                <div class="table-responsive">
+                    <div class="col-md-12 col-lg-9">
+                        <div class="card">
+                            <table class="table table-striped no-wrap sortable table-hover v-middle mb-0 font-14" id="group_contact_table">
+                                <thead>
+                                    <tr>
+                                        <th>Group Name</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var group in Model.GroupList)
+                                    {
+                                        <tr onclick="AddReceiver('@group.GroupName',1,@ViewData["ActionID"])">
+                                            <td>
+                                                <span class="text-dark">@group.GroupName</span>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+    </div>
+</div>
+
+
+<script>
+    $(document).ready(function () {
+        $('#user_contact_table').dataTable();
+        $('#group_contact_table').dataTable();
+    });
+</script>
+
+

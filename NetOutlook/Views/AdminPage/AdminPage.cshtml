@@ -1,0 +1,76 @@
+﻿@using NetOutlook.Models
+@model NetOutlook.Models.AdminPageModel
+
+@if (Model.IsValid == false)
+{
+    <h1>Error</h1>
+}
+else
+{
+    <div class="container">
+        <div class="tab-content">
+            <div class="tab-pane active" id="users_list">
+                <div class="container bootdey">
+                    <div class="table-responsive">
+                        <div class="col-md-12 col-lg-9">
+                            <div class="card">
+                                <table class="table table-striped no-wrap sortable table-hover v-middle mb-0 font-14" id="user_contact_table">
+                                    <thead>
+                                        <tr>
+                                            <th>Name</th>
+                                            <th>Surname</th>
+                                            <th>E-Mail</th>
+                                            <th>State</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var user in Model.Users)
+                                        {
+                                        <tr>
+                                            <td>
+                                                <span class="text-dark">@user.UserRaw.Name</span>
+                                            </td>
+                                            <td>
+                                                <span class="text-dark">@user.UserRaw.Surname</span>
+                                            </td>
+                                            <td class="text-muted">@user.UserRaw.EmailAddress</td>
+                                            @if (user.UserRaw.Role == 0)
+                                            {
+                                                <td class="text-muted">Registered</td>
+                                                <td>
+                                                    <a href="@user.DeleteLink">Delete</a>
+                                                </td>
+                                            }
+                                            @if (user.UserRaw.Role == -1)
+                                            {
+                                                <td class="text-muted">Waiting for acceptance</td>
+                                                <td>
+                                                    <a href="@user.DeleteLink">Reject</a>
+                                                    <br />
+                                                    <a href="@user.AcceptLink">Accept</a>
+                                                </td>
+                                            }
+                                        </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@section scripts{
+    <script>
+        $(document).ready(function () {
+            $('#user_contact_table').dataTable();
+        });
+    </script>
+}
+
+
+

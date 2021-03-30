@@ -1,0 +1,204 @@
+﻿@using NetOutlook.Models
+@model NetOutlook.Models.InboxViewModel
+
+@{
+    ViewData["Title"] = "Inbox";
+}
+
+<style>
+    /* Remove default bullets */
+    ul, #myUL {
+        list-style-type: none;
+    }
+
+    /* Remove margins and padding from the parent ul */
+    #myUL {
+        margin: 0;
+        padding: 0;
+    }
+
+    /* Style the caret/arrow */
+    .caret {
+        cursor: pointer;
+        user-select: none; /* Prevent text selection */
+    }
+
+        /* Create the caret/arrow with a unicode, and style it */
+        .caret::before {
+            content: "\25B6";
+            color: black;
+            display: inline-block;
+            margin-right: 6px;
+        }
+
+    /* Rotate the caret/arrow icon when clicked on (using JavaScript) */
+    .caret-down::before {
+        transform: rotate(90deg);
+    }
+
+    /* Hide the nested list */
+    .nested {
+        display: none;
+    }
+
+    /* Show the nested list when the user clicks on the caret/arrow (with JavaScript) */
+    .active {
+        display: block;
+    }
+</style>
+
+<div class="container">
+        <h4 style="text-align: center">Your Inbox</h4>
+        <ul id="myUL">
+            <li>
+                <span class="caret">All messages</span>
+                <ul class="nested">
+                    <li>
+                        <div class="tab-content">
+                            <div class="tab-pane active" id="user_list">
+                                <div class="container bootdey">
+                                    <div class="table-responsive">
+                                        <div class="col-md-12 col-lg-9">
+                                            <div class="card">
+                                                <table class="table table-striped no-wrap sortable table-hover v-middle mb-0 font-14 display" id="inbox_all">
+                                                    <thead>
+                                                        <tr>
+                                                            <th>State</th>
+                                                            <th>Sender</th>
+                                                            <th width="200px">Subject</th>
+                                                            <th>Date</th>
+                                                            <th>Details</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        @foreach (var m in Model.inboxMessages)
+                                                        {
+                                                            <tr>
+                                                                @if (!m.IsRead)
+                                                                {
+                                                                    <td><b>Unread</b></td>
+                                                                }
+                                                                else
+                                                                {
+                                                                    <td>Read</td>
+                                                                }
+                                                                <td>
+                                                                    <span class="text-dark">@m.SenderName @m.SenderSurname</span>
+                                                                </td>
+                                                                <td>
+                                                                       @m.Subject
+                                                                </td>
+                                                                <td class="text-muted">@m.DateView</td>
+                                                                <td>
+                                                                    <a href="@m.Link">Details</a>
+                                                                </td>
+                                                            </tr>
+                                                        }
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+            </li>
+            <li>
+                <span class="caret">Messages in daily tree view</span>
+                <ul class="nested">
+                    @{
+                        foreach(var d in Model.dates)
+                        {
+                            <li>
+                                <span class="caret">@d</span>
+                                <ul class="nested" onclick="activate(@d)">
+                                    <li>
+                                        <div class="tab-content">
+                                            <div class="tab-pane active">
+                                                <div class="container bootdey">
+                                                    <div class="table-responsive">
+                                                        <div class="col-md-12 col-lg-9">
+                                                            <div class="card">
+                                                                <table class="table table-striped no-wrap sortable table-hover v-middle mb-0 font-14 display" id="inbox_date_@d">
+                                                                    <thead>
+                                                                        <tr>
+                                                                            <th>State</th>
+                                                                            <th>Sender</th>
+                                                                            <th width="200px">Subject</th>
+                                                                            <th>Date</th>
+                                                                            <th>Details</th>
+                                                                        </tr>
+                                                                    </thead>
+                                                                    <tbody>
+                                                                        @foreach (var m in Model.inboxMessages)
+                                                                        {
+                                                                            if (m.DateDay== d)
+                                                                            {
+                                                                                <tr>
+                                                                                    @if (!m.IsRead)
+                                                                                    {
+                                                                                        <td><b>Unread</b></td>
+                                                                                    }
+                                                                                    else
+                                                                                    {
+                                                                                        <td>Read</td>
+                                                                                    }
+                                                                                    <td>
+                                                                                        <span class="text-dark">@m.SenderName @m.SenderSurname</span>
+                                                                                    </td>
+                                                                                    <td>
+                                                                                         @m.Subject
+                                                                                    </td>
+                                                                                    <td class="text-muted">@m.DateView</td>
+                                                                                    <td>
+                                                                                        <a href="@m.Link">Details</a>
+                                                                                    </td>
+                                                                                </tr>
+                                                                            }
+                                                                        }
+                                                                    </tbody>
+                                                                </table>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </li>
+                                </ul>
+                            </li>
+                        }
+                    }
+                </ul>
+            </li>
+        </ul>
+    </div>
+
+
+    @section scripts{
+        <script>
+            $(document).ready(function () {
+                $('table.display').dataTable({
+                    "aaSorting": [],
+                    columnDefs: [{
+                        orderable: false,
+                        targets: [1, 2, 4]
+                    }]
+                });
+            });
+        </script>
+
+        <script>
+            var toggler = document.getElementsByClassName("caret");
+            var i;
+
+            for (i = 0; i < toggler.length; i++) {
+                toggler[i].addEventListener("click", function () {
+                    this.parentElement.querySelector(".nested").classList.toggle("active");
+                    this.classList.toggle("caret-down");
+                });
+            }
+        </script>
+    }

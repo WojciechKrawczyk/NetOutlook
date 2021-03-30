@@ -1,0 +1,178 @@
+﻿@{
+    ViewData["Title"] = "New Message";
+}
+
+<link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet">
+<div class="container bootdey">
+    <div class="email-app">
+        <main>
+            <h4 class="text-center">Create your new message</h4>
+            <form>
+                <div class="form-row mb-3">
+                    <label for="to" class="col-2 col-sm-1 col-form-label">To:</label>
+                    <div class="col-10 col-sm-11">
+                        <input type="text" class="form-control" id="rec_to" placeholder="Add emails, separating them with ';'. To address group, type: 'g:group_name'.">
+                    </div>
+                </div>
+                <div class="form-row mb-3">
+                    <label for="cc" class="col-2 col-sm-1 col-form-label">CC:</label>
+                    <div class="col-10 col-sm-11">
+                        <input type="text" class="form-control" id="rec_cc" placeholder="Add emails, separating them with ';'. To address group, type: 'g:group_name'.">
+                    </div>
+                </div>
+                <div class="form-row mb-3">
+                    <label for="bcc" class="col-2 col-sm-1 col-form-label">BCC:</label>
+                    <div class="col-10 col-sm-11">
+                        <input type="text" class="form-control" id="rec_bcc" placeholder="Add emails, separating them with ';'. To address group, type: 'g:group_name'.">
+                    </div>
+                </div>
+            </form>
+            <div class="row">
+                <div class="col-sm-11 ml-auto">
+                    <div class="toolbar" role="toolbar">
+                        <div class="btn-group">
+                            <button type="button" onclick="GCL(0)" class="btn btn-light">
+                                +Direct Receiver
+                            </button>
+                            <button type="button" onclick="GCL(1)" class="btn btn-light">
+                                +CC Receiver
+                            </button>
+                            <button type="button" onclick="GCL(2)" class="btn btn-light">
+                                +BCC Receiver
+                            </button>
+                        </div>
+                    </div>
+                    <div class="form-row mb-3">
+                        <label for="subject" class="col-2 col-sm-1 col-form-label">Subject:</label>
+                        <div class="col-10 col-sm-11">
+                            <input type="text" class="form-control" id="subject" placeholder="Type Subject">
+                        </div>
+                    </div>
+                    <div class="form-group mt-4">
+                        <textarea class="form-control" id="message" name="body" rows="12" placeholder="Type your message"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <button type="submit" onclick="VerifyMessage()" class="btn btn-outline-success">Send</button>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+
+<div class="modal fade" id="EmptyModal" role="dialog">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Message is empty</h4>
+            </div>
+            <div class="empty-modal-body">
+                Either message subject or content is empty. Are you sure you want to send this message?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" onclick="Send()" data-dismiss="modal">Yes</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">No</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@*To od dołu trzeba skopiować, by można było dodać okno modalne z listą kontatków
+onclick="GCL(0)"*@
+
+<div class="modal fade" id="ContactModal" role="dialog">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Contacts</h4>
+            </div>
+            <div class="modal-body">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>   
+</div>
+
+@section scripts{
+    <script>
+        function GCL(id) {
+            $.get("@Url.Action("PopupContact","NewMessage")/" + id,
+                function (data)
+                {
+                    $('.modal-body').html(data);
+                });
+
+                $("#ContactModal").modal("show");
+        }
+    </script>
+    <script>
+        function AddReceiver(text, type_id, action_id) {
+            $("#ContactModal").modal("hide");
+
+            var input;
+
+            if (action_id == 0) input = $('#rec_to');
+            else if (action_id == 1) input = $("#rec_cc");
+            else input = $("#rec_bcc");
+
+            if (type_id == 0) {
+                input.val(input.val() + text + ';');
+            }
+            else if (type_id == 1) {
+                input.val(input.val() + 'g:' + text + ';');
+            }
+        }
+    </script>
+    <script>
+        function VerifyMessage()
+        {
+            var l = $("#message").val().trim().length
+            var l1 = $("#subject").val().trim().length
+            if (l < 1 || l1 < 1) {
+                $("#EmptyModal").modal("show");
+            }
+            else
+            {
+                Send();
+            }
+        }
+    </script>
+
+    <script>
+        function Send()
+        {
+            var message = new Object();
+            message.SubjectText = $("#subject").val();
+            message.MessageContent = $("#message").val();
+            message.Direct = $("#rec_to").val();
+            message.CC = $("#rec_cc").val();
+            message.BCC = $("#rec_bcc").val();
+            $.ajax(
+                {
+                url: '/NewMessage/Send',
+                type: 'POST',
+                data: JSON.stringify(message),
+                contentType: 'application/json; charset=utf-8',
+                beforeSend: function () {
+                    
+                },
+                success: function (data) {
+                    alert(data.msg);
+                    if (data.success === true)
+                    {
+                        location.href = '/Home/Index';
+                    }
+                },
+                error: function (data)
+                {
+                    alert(data.msg);
+                }
+                });
+        }
+    </script>
+}
+

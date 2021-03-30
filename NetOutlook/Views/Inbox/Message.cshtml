@@ -1,0 +1,68 @@
+﻿@using NetOutlook.Models
+@model NetOutlook.Models.MessageViewModel
+
+@{
+    ViewData["Title"] = "Message";
+}
+
+<link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet">
+<div class="container bootdey">
+    <div class="email-app">
+        <main>
+            <h4 class="text-center">Message details</h4>
+            @*<form>
+                <div class="form-row mb-3">
+                    <label for="to" class="col-2 col-sm-1 col-form-label">To:</label>
+                    <div class="col-10 col-sm-11">
+                        <input type="text" class="form-control" id="rec_to" placeholder="hm">
+                    </div>
+                </div>
+                <div class="form-row mb-3">
+                    <label for="cc" class="col-2 col-sm-1 col-form-label">CC:</label>
+                    <div class="col-10 col-sm-11">
+                        <input type="text" class="form-control" id="rec_cc" placeholder="hm">
+                    </div>
+                </div>
+                <div class="form-row mb-3">
+                    <label for="bcc" class="col-2 col-sm-1 col-form-label">BCC:</label>
+                    <div class="col-10 col-sm-11">
+                        <input type="text" class="form-control" id="rec_bcc" placeholder="hm">
+                    </div>
+                </div>
+            </form>*@
+            <div class="row">
+                <div class="col-sm-11 ml-auto">
+                    <div class="form-row mb-3" style="margin-bottom: 1px">
+                        <label style="margin-right: 10px; width: 60px" for="sender"><b>Sender:</b></label>
+                        <div>
+                            <output typeof="text">@(Model.message.SenderName + " " + Model.message.SenderSurname + " <" + Model.message.SenderEmailAddress + ">")</output>
+                        </div>
+                    </div>
+                    <div class="form-row mb-3" style="margin-top: 1px">
+                        <label style="margin-right: 10px; width: 60px" for="subject"><b>Subject:</b></label>
+                        <div>
+                            <output typeof="text">@Model.message.Subject</output>
+                        </div>
+                    </div>
+                    @{
+                        if (Model.message.CC.Length > 0)
+                        {
+                            <div class="form-row mb-3" style="margin-top: 1px">
+                                <label style="margin-right: 10px; width: 60px" for="subject"><b>CC:</b></label>
+                                <div>
+                                    <output typeof="text">@Model.message.CC</output>
+                                </div>
+                            </div>
+                        }
+                    }
+                    <div class="form-row mb-3" style="border: 2px solid #0033cc">
+                        <output typeof="text">@Model.message.Content</output>
+                    </div>
+                    <div class="form-row mb-2">
+                        <p>@Model.message.DateDetail</p>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>

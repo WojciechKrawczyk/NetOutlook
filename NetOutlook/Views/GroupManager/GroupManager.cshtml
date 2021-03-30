@@ -1,0 +1,76 @@
+﻿@model NetOutlook.Models.GroupManagerModel
+
+@{
+    ViewData["Title"] = "GroupManager";
+}
+
+<h1>Group Manager</h1>
+
+<p>
+    <a asp-action="AddGroup">Add New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                Group Name
+            </th>
+            <th>
+                Members Count
+            </th>
+            <th>
+                Actions
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.groups)
+        {
+            <tr>
+                <td>
+                    @item.GroupName
+                </td>
+                <td>
+                    @if (@item.Members != null)
+                    {
+                        @item.Members.Count
+                    }
+                </td>
+                <td>
+                    @Html.ActionLink("Edit and Details", "EditGroup", new { id = item.Id }) |
+                    <a href="#" onclick="Delete(@item.Id)">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@section scripts{
+    
+    <script>
+        function Delete(id) {
+            console.log("Group Delate...");
+            console.log(id);
+            var data = new Object();
+            data.OldIdStr = id;
+            console.log(data);
+
+            $.ajax(
+                {
+                    url: '/GroupManager/Delete',
+                    type: 'POST',
+                    data: JSON.stringify(data),
+                    contentType: 'application/json; charset=utf-8',
+                    success: function (data) {
+                        alert(data.msg);
+                        location.href = '/GroupManager/GroupManager';
+                    },
+                    error: function (data) {
+                        alert(data.msg);
+                        location.href = '/GroupManager/GroupManager';
+                    }
+                });
+        }
+    </script>
+}
+

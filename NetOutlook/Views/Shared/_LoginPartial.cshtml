@@ -1,0 +1,24 @@
+﻿@using System.Security.Principal
+@if (User.Identity.IsAuthenticated)
+{
+    List<System.Security.Claims.Claim> c = User.Claims.Where(x=>x.Type.Contains("givenname")).ToList();
+    string Name = c[0].Value;
+    <ul class="nav navbar-nav navbar-right">
+    <li class="navbar-text">Hello @Name</li>
+    <li class="navbar-btn">
+        <form method="get" asp-area="MicrosoftIdentity" asp-controller="Account" asp-action="SignOut">
+            <button type="submit" class="btn btn-primary">Sign Out</button>
+        </form>
+    </li>
+</ul> 
+}
+else
+{
+<ul class="nav navbar-nav navbar-right">
+    <li class="navbar-btn">
+        <form method="get" asp-area="MicrosoftIdentity" asp-controller="Account" asp-action="SignIn">
+            <button type="submit" class="btn btn-primary">Sign Up/In</button>
+        </form>
+    </li>
+</ul>
+}
