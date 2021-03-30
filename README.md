@@ -1,6 +1,7 @@
 # NetOutlook
-Web e-mail application. Details are contained in README file. Contributors: Michał Machnio, Miłosz Mazur.
+Web e-mail application.
 Project was done as a task from "Tworzenie aplikacji webowych z wykorzystaniem .NET Framework" subject in 2020 winter term.
+Contributors: Michał Machnio, Miłosz Mazur.
 
 Businee requirements:
 - HTML Interface
